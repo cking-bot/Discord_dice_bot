@@ -3,6 +3,8 @@ package command
 import (
 	"fmt"
 	"github.com/bwmarrin/discordgo"
+	"github.com/mitchellh/mapstructure"
+	"rps_bot/models"
 )
 
 func RpsStart(s *discordgo.Session, i *discordgo.InteractionCreate) {
@@ -13,6 +15,11 @@ func RpsStart(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	optionMap := make(map[string]*discordgo.ApplicationCommandInteractionDataOption, len(options))
 	for _, opt := range options {
 		optionMap[opt.Name] = opt
+	}
+
+	var optionStruct models.Command
+	if err := mapstructure.Decode(optionMap, &optionStruct); err != nil {
+
 	}
 
 	// This example stores the provided arguments in an []interface{}
