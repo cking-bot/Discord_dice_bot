@@ -52,7 +52,7 @@ var (
 	commandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
 
 		"rps": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
-			command.RpsStart()
+			command.RpsStart(s, i)
 		},
 	}
 )
