@@ -23,7 +23,7 @@ func RpsStart(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	// Get the value from the option map.
 	// When the option exists, ok = true
-	if option, ok := optionMap["Opponent username:"]; ok { //if the key value is the name do xyz
+	if option, ok := optionMap["username"]; ok { //if the key value is the name do xyz
 		// Option values must be type asserted from interface{}.
 		// Discordgo provides utility functions to make this simple.
 		margs = append(margs, option.StringValue())

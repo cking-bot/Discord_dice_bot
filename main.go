@@ -41,7 +41,7 @@ var (
 
 				{
 					Type:        discordgo.ApplicationCommandOptionUser,
-					Name:        "Opponent username:",
+					Name:        "username",
 					Description: "Choose your opponent",
 					Required:    true,
 				},
