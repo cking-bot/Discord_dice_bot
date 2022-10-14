@@ -13,7 +13,7 @@ import (
 var (
 	GuildID        = flag.String("guild", "", "Test guild ID. If not passed - bot registers command globally")
 	BotToken       = flag.String("token", os.Getenv("DISCORD_TOKEN"), "Bot access token")
-	RemoveCommands = flag.Bool("rmcmd", false, "Remove all command after shutdowning or not")
+	RemoveCommands = flag.Bool("rmcmd", true, "Remove all command after shutdowning or not")
 )
 
 var s *discordgo.Session
