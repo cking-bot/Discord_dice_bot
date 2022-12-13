@@ -1,48 +1,65 @@
 package command
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"github.com/mitchellh/mapstructure"
+	"log"
+	"net/http"
+	"os"
 	"rps_bot/models"
 )
 
-func RpsStart(s *discordgo.Session, i *discordgo.InteractionCreate) {
+func Roll(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	// Access options in the order provided by the user.
-	options := i.ApplicationCommandData().Options
 
 	// Or convert the slice into a map
-	optionMap := make(map[string]*discordgo.ApplicationCommandInteractionDataOption, len(options))
-	for _, opt := range options {
-		optionMap[opt.Name] = opt
+	var response string
+	var options = make(map[string]interface{})
+	for _, option := range i.ApplicationCommandData().Options {
+		options[option.Name] = option.Value
+	} //given by discord
+
+	var cmd models.Command
+	err := mapstructure.Decode(options, &cmd) //throws map into struct using mapstructure
+	if err != nil {
+		log.Println(err)
+	} //structs are easier then maps
+
+	log.Println(cmd)
+
+	body, err := json.Marshal(cmd)
+	if err != nil {
+		log.Print(err)
+		return
 	}
 
-	var optionStruct models.Command
-	if err := mapstructure.Decode(optionMap, &optionStruct); err != nil {
+	req, err := http.NewRequest("POST", os.Getenv("URL")+"/roll", bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
 
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	defer resp.Body.Close()
+
+	err = json.NewDecoder(resp.Body).Decode(&response)
+	if err != nil {
+		log.Print(err)
+		return
 	}
 
-	// This example stores the provided arguments in an []interface{}
-	// which will be used to format the bot's response
-	margs := make([]interface{}, 0, len(options))
-	msgformat := "You learned how to use command options! " +
-		"Take a look at the value(s) you entered:\n"
-
-	// Get the value from the option map.
-	// When the option exists, ok = true
-	if option, ok := optionMap["username"]; ok { //if the key value is the name do xyz
-		// Option values must be type asserted from interface{}.
-		// Discordgo provides utility functions to make this simple.
-		margs = append(margs, option.StringValue())
-		msgformat += "> string-option: %s\n" // > puts the grey bar in discord
-	}
+	//Responds to the command
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		// Ignore type for now, they will be discussed in "responses"
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
 			Content: fmt.Sprintf(
-				msgformat,
-				margs...,
+				response,
 			),
 		},
 	})

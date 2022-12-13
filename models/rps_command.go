@@ -1,5 +1,7 @@
 package models
 
 type Command struct {
-	Opponent string
+	Dice      string
+	Number    int
+	Advantage string
 }
