@@ -145,15 +145,12 @@ func init() {
 
 //even listener, waits for someone to do something and handles that request
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	godotenv.Load(".env")
 
 	s.AddHandler(func(s *discordgo.Session, r *discordgo.Ready) { //handles any requests
 		log.Printf("Logged in as: %v#%v", s.State.User.Username, s.State.User.Discriminator)
 	})
-	
+
 	err = s.Open()
 	if err != nil {
 		log.Fatalf("Cannot open the session: %v", err)
